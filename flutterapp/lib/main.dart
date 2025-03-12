@@ -251,6 +251,7 @@ class GeneratorPage extends StatelessWidget {
             ],
           ),
           MiWidget(text: 'Texto de prueba'),
+          MostrarImagen(),
         ],
       ),
     );
@@ -328,5 +329,13 @@ class BigCard extends StatelessWidget {
         child: Text(pair.asLowerCase, style: style),
       ),
     );
+  }
+}
+
+
+class MostrarImagen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset('../assets/kitty-cat.gif');
   }
 }
