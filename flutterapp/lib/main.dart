@@ -345,7 +345,7 @@ class MostrarImagen extends StatefulWidget {
 class _MostrarImagenState extends State<MostrarImagen> {
   final List<String> _subdirectories = ['images', 'gifs', 'links'];
   final Map<String, List<String>> _assets = {
-    'images': ['capi.jpg', 'hellLetLoose.jpg', 'tu-4.jpg'],
+    'images': ['capi.png', 'hellLetLoose.png', 'tu-4.jpg'],
     'gifs': ['barotrauma-baro.gif', 'barotrauma-barotrauma-game.gif', 'kitty-cat.gif'],
   };
 
@@ -390,22 +390,31 @@ class _MostrarImagenState extends State<MostrarImagen> {
 
   @override
   Widget build(BuildContext context) {
-    return _selectedAsset == null
-        ? CircularProgressIndicator()
-        : _selectedAsset!.startsWith('http')
-            ? FutureBuilder<http.Response>(
-                future: _fetchImage(_selectedAsset!),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    } else if (snapshot.hasData) {
-                      return Image.memory(snapshot.data!.bodyBytes);
-                    }
-                  }
-                  return CircularProgressIndicator();
-                },
-              )
-            : Image.asset(_selectedAsset!);
+    return Column(
+      children: [
+        _selectedAsset == null
+            ? CircularProgressIndicator()
+            : _selectedAsset!.startsWith('http')
+                ? FutureBuilder<http.Response>(
+                    future: _fetchImage(_selectedAsset!),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        } else if (snapshot.hasData) {
+                          return Image.memory(snapshot.data!.bodyBytes);
+                        }
+                      }
+                      return CircularProgressIndicator();
+                    },
+                  )
+                : Image.asset(_selectedAsset!),
+        SizedBox(height: 10),
+        ElevatedButton(
+          onPressed: _selectRandomAsset,
+          child: Text('Cambiar Imagen'),
+        ),
+      ],
+    );
   }
 }
