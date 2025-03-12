@@ -197,7 +197,8 @@ class MiWidget extends StatelessWidget {
 }
 
 class GeneratorPage extends StatelessWidget {
-  final GlobalKey<_PalabraPersonalizadaState> _palabraPersonalizadaKey = GlobalKey<_PalabraPersonalizadaState>();
+  final GlobalKey<_PalabraPersonalizadaState> _palabraPersonalizadaKey =
+      GlobalKey<_PalabraPersonalizadaState>();
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
@@ -235,15 +236,19 @@ class GeneratorPage extends StatelessWidget {
               ),
             ],
           ),
-          PalabraPersonalizada(key: _palabraPersonalizadaKey),
-          ElevatedButton(
-            onPressed: (){
-              print(_palabraPersonalizadaKey.currentState?.getPalabra());
-              String palabra = _palabraPersonalizadaKey.currentState?.getPalabra() ?? '';
-              print(palabra);
-              appState.customFavorite(palabra);
-            },
-            child: Text('Agregar Favorito'),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              PalabraPersonalizada(key: _palabraPersonalizadaKey),
+              ElevatedButton(
+                onPressed: () {
+                  String palabra =
+                      _palabraPersonalizadaKey.currentState?.getPalabra() ?? '';
+                  appState.customFavorite(palabra);
+                },
+                child: Text('Agregar Favorito'),
+              ),
+            ],
           ),
           MiWidget(text: 'Texto de prueba'),
         ],
@@ -253,24 +258,38 @@ class GeneratorPage extends StatelessWidget {
 }
 
 class PalabraPersonalizada extends StatefulWidget {
-const PalabraPersonalizada({super.key});
-@override
-State<PalabraPersonalizada> createState() => _PalabraPersonalizadaState();
- 
+  const PalabraPersonalizada({super.key});
+  @override
+  State<PalabraPersonalizada> createState() => _PalabraPersonalizadaState();
 }
 
-class _PalabraPersonalizadaState extends State<PalabraPersonalizada>{
+class _PalabraPersonalizadaState extends State<PalabraPersonalizada> {
   late TextEditingController controller;
   String palabra = '';
   @override
   void initState() {
     super.initState();
     controller = TextEditingController();
+    controller.addListener(_updatePalabra);
   }
 
-  String getPalabra(){
+  void _updatePalabra() {
+    setState(() {
+      palabra = controller.text;
+    });
+  }
+
+  @override
+  void dispose() {
+    controller.removeListener(_updatePalabra);
+    controller.dispose();
+    super.dispose();
+  }
+
+  String getPalabra() {
     return palabra;
   }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -281,17 +300,10 @@ class _PalabraPersonalizadaState extends State<PalabraPersonalizada>{
         decoration: InputDecoration(
           hintText: 'Palabra personalizada',
         ),
-        onSubmitted: (String value) {
-          setState(() {
-            palabra = controller.text;
-          });
-        },
       ),
     );
   }
 }
-
-
 
 class BigCard extends StatelessWidget {
   const BigCard({
