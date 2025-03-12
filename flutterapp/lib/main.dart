@@ -2,10 +2,9 @@ import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
-import 'dart:math';
-import 'package:flutter/services.dart' show rootBundle;
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'mostrarImagenes.dart';
+
+
 
 void main() {
   runApp(MyApp());
@@ -33,13 +32,12 @@ class MyApp extends StatelessWidget {
 
 class MyAppState extends ChangeNotifier {
   var current = WordPair.random();
+  var favorites = <WordPair>[];
 
   void getNext() {
     current = WordPair.random();
     notifyListeners();
   }
-
-  var favorites = <WordPair>[];
 
   void customFavorite(String palabra) {
     favorites.add(WordPair(palabra, ' '));
@@ -140,15 +138,58 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class FavoritesPage extends StatelessWidget {
+class FavoritesPage extends StatefulWidget {
+  @override
+  _FavoritesPageState createState() => _FavoritesPageState();
+}
+
+class _FavoritesPageState extends State<FavoritesPage> {
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
+  late List<WordPair> _favorites;
+
+  @override
+  void initState() {
+    super.initState();
+    var appState = context.read<MyAppState>();
+    _favorites = List.from(appState.favorites);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _addItems();
+    });
+  }
+
+  void _addItems() {
+    for (int i = 0; i < _favorites.length; i++) {
+      Future.delayed(Duration(milliseconds: i * 100), () {
+        if (_listKey.currentState != null) {
+          _listKey.currentState!.insertItem(i);
+        }
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
-    return ListView.builder(
-      itemCount: appState.favorites.length,
-      itemBuilder: (context, index) {
-        return FavoriteCard(pair: appState.favorites[index]);
+    return Consumer<MyAppState>(
+      builder: (context, appState, child) {
+        _favorites = List.from(appState.favorites);
+        return AnimatedList(
+          key: _listKey,
+          initialItemCount: _favorites.length,
+          itemBuilder: (context, index, animation) {
+            if (index >= _favorites.length) {
+              return SizedBox.shrink(); // Return an empty widget if index is out of range
+            }
+            return _buildItem(_favorites[index], animation);
+          },
+        );
       },
+    );
+  }
+
+  Widget _buildItem(WordPair pair, Animation<double> animation) {
+    return SizeTransition(
+      sizeFactor: animation,
+      child: FavoriteCard(pair: pair),
     );
   }
 }
@@ -337,84 +378,3 @@ class BigCard extends StatelessWidget {
 }
 
 
-class MostrarImagen extends StatefulWidget {
-  @override
-  _MostrarImagenState createState() => _MostrarImagenState();
-}
-
-class _MostrarImagenState extends State<MostrarImagen> {
-  final List<String> _subdirectories = ['images', 'gifs', 'links'];
-  final Map<String, List<String>> _assets = {
-    'images': ['capi.png', 'hellLetLoose.png', 'tu-4.jpg'],
-    'gifs': ['barotrauma-baro.gif', 'barotrauma-barotrauma-game.gif', 'kitty-cat.gif'],
-  };
-
-  List<String> _links = [];
-  String? _selectedAsset;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadLinks();
-  }
-
-  Future<void> _loadLinks() async {
-    final String response = await rootBundle.loadString('assets/links/enlaces.json');
-    final data = await json.decode(response);
-    setState(() {
-      _links = List<String>.from(data['links']);
-      _selectRandomAsset();
-    });
-  }
-
-  void _selectRandomAsset() {
-    final random = Random();
-    final subdirectory = _subdirectories[random.nextInt(_subdirectories.length)];
-    if (subdirectory == 'links') {
-      final link = _links[random.nextInt(_links.length)];
-      setState(() {
-        _selectedAsset = link;
-      });
-    } else {
-      final assets = _assets[subdirectory]!;
-      final asset = assets[random.nextInt(assets.length)];
-      setState(() {
-        _selectedAsset = 'assets/$subdirectory/$asset';
-      });
-    }
-  }
-
-  Future<http.Response> _fetchImage(String url) {
-    return http.get(Uri.parse(url));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        _selectedAsset == null
-            ? CircularProgressIndicator()
-            : _selectedAsset!.startsWith('http')
-                ? FutureBuilder<http.Response>(
-                    future: _fetchImage(_selectedAsset!),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.done) {
-                        if (snapshot.hasError) {
-                          return Text('Error: ${snapshot.error}');
-                        } else if (snapshot.hasData) {
-                          return Image.memory(snapshot.data!.bodyBytes);
-                        }
-                      }
-                      return CircularProgressIndicator();
-                    },
-                  )
-                : Image.asset(_selectedAsset!),
-        SizedBox(height: 10),
-        ElevatedButton(
-          onPressed: _selectRandomAsset,
-          child: Text('Cambiar Imagen'),
-        ),
-      ],
-    );
-  }
-}
