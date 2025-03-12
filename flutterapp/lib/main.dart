@@ -52,6 +52,11 @@ class MyAppState extends ChangeNotifier {
     }
     notifyListeners();
   }
+
+  void removeFavorite(WordPair pair) {
+    favorites.remove(pair);
+    notifyListeners();
+  }
 }
 
 class LoginPage extends StatelessWidget {
@@ -167,6 +172,17 @@ class _FavoritesPageState extends State<FavoritesPage> {
     }
   }
 
+  void _removeItem(int index) {
+    var appState = context.read<MyAppState>();
+    final removedItem = _favorites.removeAt(index);
+    appState.removeFavorite(removedItem);
+    _listKey.currentState?.removeItem(
+      index,
+      (context, animation) => _buildItem(removedItem, animation, index),
+      duration: Duration(milliseconds: 300),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<MyAppState>(
@@ -179,17 +195,20 @@ class _FavoritesPageState extends State<FavoritesPage> {
             if (index >= _favorites.length) {
               return SizedBox.shrink(); // Return an empty widget if index is out of range
             }
-            return _buildItem(_favorites[index], animation);
+            return _buildItem(_favorites[index], animation, index);
           },
         );
       },
     );
   }
 
-  Widget _buildItem(WordPair pair, Animation<double> animation) {
+  Widget _buildItem(WordPair pair, Animation<double> animation, int index) {
     return SizeTransition(
       sizeFactor: animation,
-      child: FavoriteCard(pair: pair),
+      child: FavoriteCard(
+        pair: pair,
+        onRemove: () => _removeItem(index),
+      ),
     );
   }
 }
@@ -198,9 +217,11 @@ class FavoriteCard extends StatelessWidget {
   const FavoriteCard({
     super.key,
     required this.pair,
+    required this.onRemove,
   });
 
   final WordPair pair;
+  final VoidCallback onRemove;
 
   @override
   Widget build(BuildContext context) {
@@ -208,13 +229,16 @@ class FavoriteCard extends StatelessWidget {
     final style = theme.textTheme.displayMedium!.copyWith(
       color: theme.colorScheme.onPrimary,
     );
-    return Card(
-      elevation: 30.0,
-      shadowColor: Color.fromARGB(255, 247, 0, 255),
-      color: theme.colorScheme.primary,
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Text(pair.asLowerCase, style: style),
+    return InkWell(
+      onTap: onRemove,
+      child: Card(
+        elevation: 30.0,
+        shadowColor: Color.fromARGB(255, 247, 0, 255),
+        color: theme.colorScheme.primary,
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Text(pair.asLowerCase, style: style),
+        ),
       ),
     );
   }
