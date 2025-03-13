@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:http/http.dart' as http;
+
 class MostrarImagen extends StatefulWidget {
   @override
   _MostrarImagenState createState() => _MostrarImagenState();
@@ -60,10 +61,22 @@ class _MostrarImagenState extends State<MostrarImagen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    final maxImageSize = screenSize.width * 0.3;
+
     return Column(
       children: [
         _uploadedImage != null
-            ? Image.memory(_uploadedImage!)
+            ? Container(
+                constraints: BoxConstraints(
+                  maxWidth: maxImageSize,
+                  maxHeight: maxImageSize,
+                ),
+                child: FittedBox(
+                  fit: BoxFit.contain,
+                  child: Image.memory(_uploadedImage!),
+                ),
+              )
             : _selectedAsset == null
                 ? CircularProgressIndicator()
                 : _selectedAsset!.startsWith('http')
@@ -74,13 +87,31 @@ class _MostrarImagenState extends State<MostrarImagen> {
                             if (snapshot.hasError) {
                               return Text('Error: ${snapshot.error}');
                             } else if (snapshot.hasData) {
-                              return Image.memory(snapshot.data!.bodyBytes);
+                              return Container(
+                                constraints: BoxConstraints(
+                                  maxWidth: maxImageSize,
+                                  maxHeight: maxImageSize,
+                                ),
+                                child: FittedBox(
+                                  fit: BoxFit.contain,
+                                  child: Image.memory(snapshot.data!.bodyBytes),
+                                ),
+                              );
                             }
                           }
                           return CircularProgressIndicator();
                         },
                       )
-                    : Image.asset(_selectedAsset!),
+                    : Container(
+                        constraints: BoxConstraints(
+                          maxWidth: maxImageSize,
+                          maxHeight: maxImageSize,
+                        ),
+                        child: FittedBox(
+                          fit: BoxFit.contain,
+                          child: Image.asset(_selectedAsset!),
+                        ),
+                      ),
         SizedBox(height: 10),
         ElevatedButton(
           onPressed: _selectRandomAsset,
