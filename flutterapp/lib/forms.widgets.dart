@@ -240,6 +240,18 @@ class _GridViewWidget extends State<GridViewWidget> {
                 value: 'List',
                 child: Text('List'),
               ),
+              const PopupMenuItem<String>(
+                value: 'Staggered',
+                child: Text('Staggered'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'Masonry',
+                child: Text('Masonry'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'Carousel',
+                child: Text('Carousel'),
+              ),
             ],
           ),
         ],
@@ -259,95 +271,92 @@ class _GridViewWidget extends State<GridViewWidget> {
             },
           ),
           Expanded(
-            child: _layout == 'Grid'
-                ? GridView.count(
-                    crossAxisCount: 2,
-                    children: [
-                      Container(
-                        margin: EdgeInsets.all(8.0),
-                        decoration: BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        child: Center(
-                          child: Container(
-                            width: _tamanoTarjeta,
-                            height: _tamanoTarjeta,
-                            child: Formulario(),
-                          ),
-                        ),
-                      ),
-                      DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: Colors.green,
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        child: Center(
-                          child: Container(
-                            width: _tamanoTarjeta,
-                            height: _tamanoTarjeta,
-                            child: CampoFormulario(),
-                          ),
-                        ),
-                      ),
-                      Material(
-                        color: const Color.fromARGB(137, 63, 43, 177),
-                        borderRadius: BorderRadius.circular(8.0),
-                        child: Center(
-                          child: Container(
-                            width: _tamanoTarjeta,
-                            height: _tamanoTarjeta,
-                            child: MiAutocompletar(),
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
-                : ListView(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.all(8.0),
-                        decoration: BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        child: Center(
-                          child: Container(
-                            width: _tamanoTarjeta,
-                            height: _tamanoTarjeta,
-                            child: Formulario(),
-                          ),
-                        ),
-                      ),
-                      DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: Colors.green,
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        child: Center(
-                          child: Container(
-                            width: _tamanoTarjeta,
-                            height: _tamanoTarjeta,
-                            child: CampoFormulario(),
-                          ),
-                        ),
-                      ),
-                      Material(
-                        color: const Color.fromARGB(137, 63, 43, 177),
-                        borderRadius: BorderRadius.circular(8.0),
-                        child: Center(
-                          child: Container(
-                            width: _tamanoTarjeta,
-                            height: _tamanoTarjeta,
-                            child: MiAutocompletar(),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+            child: _buildLayout(),
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildLayout() {
+    switch (_layout) {
+      case 'Grid':
+        return GridView.count(
+          crossAxisCount: 2,
+          children: _buildChildren(),
+        );
+      case 'List':
+        return ListView(
+          children: _buildChildren(),
+        );
+      case 'Staggered':
+        return GridView.count(
+          crossAxisCount: 2,
+          children: _buildChildren(),
+          mainAxisSpacing: 4.0,
+          crossAxisSpacing: 4.0,
+          childAspectRatio: 0.75,
+        );
+      case 'Masonry':
+        return GridView.count(
+          crossAxisCount: 2,
+          children: _buildChildren(),
+          mainAxisSpacing: 4.0,
+          crossAxisSpacing: 4.0,
+          childAspectRatio: 1.5,
+        );
+      case 'Carousel':
+        return PageView(
+          children: _buildChildren(),
+        );
+      default:
+        return GridView.count(
+          crossAxisCount: 2,
+          children: _buildChildren(),
+        );
+    }
+  }
+
+  List<Widget> _buildChildren() {
+    return [
+      Container(
+        margin: EdgeInsets.all(8.0),
+        decoration: BoxDecoration(
+          color: Colors.blue,
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        child: Center(
+          child: Container(
+            width: _tamanoTarjeta,
+            height: _tamanoTarjeta,
+            child: Formulario(),
+          ),
+        ),
+      ),
+      DecoratedBox(
+        decoration: BoxDecoration(
+          color: Colors.green,
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        child: Center(
+          child: Container(
+            width: _tamanoTarjeta,
+            height: _tamanoTarjeta,
+            child: CampoFormulario(),
+          ),
+        ),
+      ),
+      Material(
+        color: const Color.fromARGB(137, 63, 43, 177),
+        borderRadius: BorderRadius.circular(8.0),
+        child: Center(
+          child: Container(
+            width: _tamanoTarjeta,
+            height: _tamanoTarjeta,
+            child: MiAutocompletar(),
+          ),
+        ),
+      ),
+    ];
   }
 }

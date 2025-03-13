@@ -1,8 +1,6 @@
-import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:http/http.dart' as http;
 
 class MostrarImagen extends StatefulWidget {
@@ -11,48 +9,30 @@ class MostrarImagen extends StatefulWidget {
 }
 
 class _MostrarImagenState extends State<MostrarImagen> {
-  final List<String> _subdirectories = ['images', 'gifs', 'links'];
+  final List<String> _subdirectories = ['images', 'gifs'];
   final Map<String, List<String>> _assets = {
     'images': ['capi.png', 'hellLetLoose.png', 'tu-4.jpg'],
     'gifs': ['barotrauma-baro.gif', 'barotrauma-barotrauma-game.gif', 'kitty-cat.gif'],
   };
 
-  List<String> _links = [];
   String? _selectedAsset;
   Uint8List? _uploadedImage;
 
   @override
   void initState() {
     super.initState();
-    _loadLinks();
-  }
-
-  Future<void> _loadLinks() async {
-    final String response = await rootBundle.loadString('assets/links/enlaces.json');
-    final data = await json.decode(response);
-    setState(() {
-      _links = List<String>.from(data['links']);
-      _selectRandomAsset();
-    });
+    _selectRandomAsset();
   }
 
   void _selectRandomAsset() {
     final random = Random();
     final subdirectory = _subdirectories[random.nextInt(_subdirectories.length)];
-    if (subdirectory == 'links') {
-      final link = _links[random.nextInt(_links.length)];
-      setState(() {
-        _selectedAsset = link;
-        _uploadedImage = null;
-      });
-    } else {
-      final assets = _assets[subdirectory]!;
-      final asset = assets[random.nextInt(assets.length)];
-      setState(() {
-        _selectedAsset = 'assets/$subdirectory/$asset';
-        _uploadedImage = null; 
-      });
-    }
+    final assets = _assets[subdirectory]!;
+    final asset = assets[random.nextInt(assets.length)];
+    setState(() {
+      _selectedAsset = 'assets/$subdirectory/$asset';
+      _uploadedImage = null;
+    });
   }
 
   Future<http.Response> _fetchImage(String url) {
@@ -62,7 +42,7 @@ class _MostrarImagenState extends State<MostrarImagen> {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
-    final maxImageSize = screenSize.width * 0.3;
+    final maxImageSize = screenSize.width * 0.2;
 
     return Column(
       children: [
