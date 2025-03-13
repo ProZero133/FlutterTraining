@@ -1,9 +1,10 @@
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'mostrarImagenes.dart';
-
+import 'forms.widgets.dart' as forms_widgets;
 
 
 void main() {
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color.fromARGB(255, 58, 255, 58)),
+              seedColor: const Color.fromARGB(255, 75, 16, 211)),
         ),
         home: MyHomePage(),
       ),
@@ -57,25 +58,17 @@ class MyAppState extends ChangeNotifier {
     favorites.remove(pair);
     notifyListeners();
   }
-}
 
-class LoginPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: ElevatedButton(
-        onPressed: () {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => MyHomePage(),
-            ),
-          );
-        },
-        child: Text('Login'),
-      ),
-    );
+   void reorderFavorites(int oldIndex, int newIndex) {
+    if (newIndex > oldIndex) {
+      newIndex -= 1;
+    }
+    final WordPair item = favorites.removeAt(oldIndex);
+    favorites.insert(newIndex, item);
+    notifyListeners();
   }
 }
+
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -84,6 +77,13 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var selectedIndex = 0;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      selectedIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget page;
@@ -95,15 +95,18 @@ class _MyHomePageState extends State<MyHomePage> {
         page = FavoritesPage();
         break;
       case 2:
-        page = LoginPage();
+        page = forms_widgets.GridViewWidget();
         break;
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }
 
-    return LayoutBuilder(builder: (context, constraints) {
-      return Scaffold(
-        body: Row(
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Flutter training'),
+      ),
+      body: LayoutBuilder(builder: (context, constraints) {
+        return Row(
           children: [
             SafeArea(
               child: NavigationRail(
@@ -118,8 +121,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     label: Text('Favorites'),
                   ),
                   NavigationRailDestination(
-                    icon: Icon(Icons.logout),
-                    label: Text('Logout'),
+                    icon: Icon(Icons.input),
+                    label: Text('Input widgets'),
                   ),
                 ],
                 selectedIndex: selectedIndex,
@@ -137,11 +140,35 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
           ],
-        ),
-      );
-    });
+        );
+      }),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite),
+            label: 'Favorites',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.input),
+            label: 'Input widgets',
+          ),
+        ],
+        currentIndex: selectedIndex,
+        selectedItemColor: Colors.amber[800],
+        onTap: _onItemTapped,
+      ),
+    );
   }
 }
+
+
+
+
+
 
 class FavoritesPage extends StatefulWidget {
   @override
@@ -149,66 +176,40 @@ class FavoritesPage extends StatefulWidget {
 }
 
 class _FavoritesPageState extends State<FavoritesPage> {
-  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
-  late List<WordPair> _favorites;
-
-  @override
-  void initState() {
-    super.initState();
-    var appState = context.read<MyAppState>();
-    _favorites = List.from(appState.favorites);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _addItems();
-    });
-  }
-
-  void _addItems() {
-    for (int i = 0; i < _favorites.length; i++) {
-      Future.delayed(Duration(milliseconds: i * 100), () {
-        if (_listKey.currentState != null) {
-          _listKey.currentState!.insertItem(i);
-        }
-      });
-    }
-  }
-
-  void _removeItem(int index) {
-    var appState = context.read<MyAppState>();
-    final removedItem = _favorites.removeAt(index);
-    appState.removeFavorite(removedItem);
-    _listKey.currentState?.removeItem(
-      index,
-      (context, animation) => _buildItem(removedItem, animation, index),
-      duration: Duration(milliseconds: 300),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Consumer<MyAppState>(
       builder: (context, appState, child) {
-        _favorites = List.from(appState.favorites);
-        return AnimatedList(
-          key: _listKey,
-          initialItemCount: _favorites.length,
-          itemBuilder: (context, index, animation) {
-            if (index >= _favorites.length) {
-              return SizedBox.shrink(); // Return an empty widget if index is out of range
-            }
-            return _buildItem(_favorites[index], animation, index);
+        return ListView.builder(
+          itemCount: appState.favorites.length,
+          itemBuilder: (context, index) {
+            return LongPressDraggable<WordPair>(
+              data: appState.favorites[index],
+              feedback: Material(
+                child: FavoriteCard(
+                  pair: appState.favorites[index],
+                  onRemove: () {},
+                ),
+              ),
+              childWhenDragging: Container(),
+              child: DragTarget<WordPair>(
+                onAcceptWithDetails: (details) {
+                  final oldIndex = appState.favorites.indexOf(details.data);
+                  appState.reorderFavorites(oldIndex, index);
+                },
+                builder: (context, candidateData, rejectedData) {
+                  return FavoriteCard(
+                    pair: appState.favorites[index],
+                    onRemove: () {
+                      appState.removeFavorite(appState.favorites[index]);
+                    },
+                  );
+                },
+              ),
+            );
           },
         );
       },
-    );
-  }
-
-  Widget _buildItem(WordPair pair, Animation<double> animation, int index) {
-    return SizeTransition(
-      sizeFactor: animation,
-      child: FavoriteCard(
-        pair: pair,
-        onRemove: () => _removeItem(index),
-      ),
     );
   }
 }
@@ -400,5 +401,3 @@ class BigCard extends StatelessWidget {
     );
   }
 }
-
-

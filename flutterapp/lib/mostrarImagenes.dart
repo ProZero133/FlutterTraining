@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
 class MostrarImagen extends StatefulWidget {
   @override
@@ -55,17 +54,6 @@ class _MostrarImagenState extends State<MostrarImagen> {
     }
   }
 
-  Future<void> _pickImage() async {
-    final result = await FilePicker.platform.pickFiles(type: FileType.image);
-
-    if (result != null) {
-      setState(() {
-        _uploadedImage = result.files.first.bytes;
-        _selectedAsset = null; // Reset selected asset
-      });
-    }
-  }
-
   Future<http.Response> _fetchImage(String url) {
     return http.get(Uri.parse(url));
   }
@@ -99,10 +87,6 @@ class _MostrarImagenState extends State<MostrarImagen> {
           child: Text('Cambiar Imagen'),
         ),
         SizedBox(height: 10),
-        ElevatedButton(
-          onPressed: _pickImage,
-          child: Text('Subir Imagen'),
-        ),
       ],
     );
   }
