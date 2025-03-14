@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
-class Formulario extends StatelessWidget {
+class Formulario extends StatefulWidget {
+  @override
+  _FormularioState createState() => _FormularioState();
+}
+
+class _FormularioState extends State<Formulario> {
+  bool _isChecked = false;
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -13,18 +20,42 @@ class Formulario extends StatelessWidget {
           TextFormField(
             decoration: InputDecoration(labelText: 'Correo Electrónico'),
           ),
-          ElevatedButton(
-            onPressed: () {
-              // Mostrar SnackBar
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  // Contenido del SnackBar
-                  content: Text('Formulario enviado con éxito'),
-                  // Color del snackbar
-                  backgroundColor: Colors.green,
-                ),
+          DropdownButtonFormField<String>(
+            decoration: InputDecoration(labelText: 'Género'),
+            items: ['Masculino', 'Femenino', 'Prefiero no decirlo', 'Otro']
+                .map((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
               );
+            }).toList(),
+            onChanged: (newValue) {
+              // Actualiza el valor seleccionado
             },
+          ),
+          CheckboxListTile(
+            title: Text('Acepto los términos y condiciones'),
+            value: _isChecked,
+            onChanged: (bool? value) {
+              setState(() {
+                _isChecked = value!;
+              });
+            },
+          ),
+          ElevatedButton(
+            onPressed: _isChecked
+                ? () {
+                    // Mostrar SnackBar
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        // Contenido del SnackBar
+                        content: Text('Formulario enviado con éxito'),
+                        // Color del snackbar
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  }
+                : null, // Deshabilita el botón si _isChecked es false
             child: Text('Enviar'),
           ),
         ],
@@ -33,7 +64,73 @@ class Formulario extends StatelessWidget {
   }
 }
 
-class CampoFormulario extends StatelessWidget {
+class CampoFormulario extends StatefulWidget {
+  @override
+  _CampoFormularioState createState() => _CampoFormularioState();
+}
+
+class _CampoFormularioState extends State<CampoFormulario> {
+  Color _textColor = Colors.black;
+  Color _shadowColor = Colors.grey;
+
+  void _selectTextColor() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Selecciona un color de texto'),
+          content: SingleChildScrollView(
+            child: ColorPicker(
+              pickerColor: _textColor,
+              onColorChanged: (Color color) {
+                setState(() {
+                  _textColor = color;
+                });
+              },
+            ),
+          ),
+          actions: <Widget>[
+            ElevatedButton(
+              child: Text('Aceptar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _selectShadowColor() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Selecciona un color de sombreado'),
+          content: SingleChildScrollView(
+            child: ColorPicker(
+              pickerColor: _shadowColor,
+              onColorChanged: (Color color) {
+                setState(() {
+                  _shadowColor = color;
+                });
+              },
+            ),
+          ),
+          actions: <Widget>[
+            ElevatedButton(
+              child: Text('Aceptar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return FormField<String>(
@@ -41,7 +138,16 @@ class CampoFormulario extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text('Campo de Formulario'),
+            Text(
+              'Campo de Formulario',
+              style: TextStyle(color: _textColor, shadows: [
+                Shadow(
+                  offset: Offset(2.0, 2.0),
+                  blurRadius: 3.0,
+                  color: _shadowColor,
+                ),
+              ]),
+            ),
             TextField(
               decoration: InputDecoration(
                 labelText: 'Campo Personalizado',
@@ -56,6 +162,15 @@ class CampoFormulario extends StatelessWidget {
                 estado.errorText ?? '',
                 style: TextStyle(color: const Color.fromARGB(255, 67, 54, 244)),
               ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: _selectTextColor,
+              child: Text('Selecciona un color de texto'),
+            ),
+            ElevatedButton(
+              onPressed: _selectShadowColor,
+              child: Text('Selecciona un color de sombreado'),
+            ),
           ],
         );
       },
@@ -69,7 +184,12 @@ class CampoFormulario extends StatelessWidget {
   }
 }
 
-class MiAutocompletar extends StatelessWidget {
+class MiAutocompletar extends StatefulWidget {
+  @override
+  _MiAutocompletarState createState() => _MiAutocompletarState();
+}
+
+class _MiAutocompletarState extends State<MiAutocompletar> {
   final List<String> _opciones = [
     'Flutter',
     'Dart',
@@ -192,20 +312,95 @@ class MiAutocompletar extends StatelessWidget {
     'Bash'
   ];
 
+  List<String> _selectedOptions = [];
+  bool _useAutocomplete = true;
+
   @override
   Widget build(BuildContext context) {
-    return Autocomplete<String>(
-      optionsBuilder: (TextEditingValue valorTexto) {
-        if (valorTexto.text.isEmpty) {
-          return const Iterable<String>.empty();
-        }
-        return _opciones.where((String opcion) {
-          return opcion.contains(valorTexto.text.toLowerCase());
-        });
-      },
-      onSelected: (String seleccion) {
-        print('Seleccionado: $seleccion');
-      },
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Radio<bool>(
+              value: true,
+              groupValue: _useAutocomplete,
+              onChanged: (bool? value) {
+                setState(() {
+                  _useAutocomplete = value!;
+                });
+              },
+            ),
+            Text('Usar Autocompletar'),
+            Radio<bool>(
+              value: false,
+              groupValue: _useAutocomplete,
+              onChanged: (bool? value) {
+                setState(() {
+                  _useAutocomplete = value!;
+                });
+              },
+            ),
+            Text('No usar Autocompletar'),
+          ],
+        ),
+        if (_useAutocomplete)
+          Autocomplete<String>(
+            optionsBuilder: (TextEditingValue valorTexto) {
+              if (valorTexto.text.isEmpty) {
+                return const Iterable<String>.empty();
+              }
+              return _opciones.where((String opcion) {
+                return opcion.contains(valorTexto.text.toLowerCase());
+              });
+            },
+            onSelected: (String seleccion) {
+              setState(() {
+                if (!_selectedOptions.contains(seleccion)) {
+                  _selectedOptions.add(seleccion);
+                }
+              });
+            },
+          ),
+        Container(
+          height: 200, // Limita la altura del contenedor
+          child: SingleChildScrollView(
+            child: Wrap(
+              spacing: 8.0,
+              children: _opciones.map((String opcion) {
+                return FilterChip(
+                  label: Text(opcion),
+                  selected: _selectedOptions.contains(opcion),
+                  onSelected: (bool selected) {
+                    setState(() {
+                      if (selected) {
+                        _selectedOptions.add(opcion);
+                      } else {
+                        _selectedOptions.remove(opcion);
+                      }
+                    });
+                  },
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+        SizedBox(height: 20),
+        Text('Seleccionados:'),
+        Wrap(
+          spacing: 8.0,
+          children: _selectedOptions.map((String opcion) {
+            return Chip(
+              label: Text(opcion),
+              onDeleted: () {
+                setState(() {
+                  _selectedOptions.remove(opcion);
+                });
+              },
+            );
+          }).toList(),
+        ),
+      ],
     );
   }
 }
@@ -216,7 +411,7 @@ class GridViewWidget extends StatefulWidget {
 }
 
 class _GridViewWidget extends State<GridViewWidget> {
-  double _tamanoTarjeta = 150.0;
+  double _tamanoTarjeta = 345.0;
   String _layout = 'Grid';
 
   @override
@@ -260,7 +455,7 @@ class _GridViewWidget extends State<GridViewWidget> {
         children: [
           Slider(
             value: _tamanoTarjeta,
-            min: 150,
+            min: 345,
             max: 500,
             divisions: 20,
             label: _tamanoTarjeta.round().toString(),
