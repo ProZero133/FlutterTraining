@@ -368,18 +368,27 @@ class _MiAutocompletarState extends State<MiAutocompletar> {
             child: Wrap(
               spacing: 8.0,
               children: _opciones.map((String opcion) {
-                return FilterChip(
-                  label: Text(opcion),
-                  selected: _selectedOptions.contains(opcion),
-                  onSelected: (bool selected) {
-                    setState(() {
-                      if (selected) {
-                        _selectedOptions.add(opcion);
-                      } else {
-                        _selectedOptions.remove(opcion);
-                      }
-                    });
-                  },
+                return Draggable<String>(
+                  data: opcion,
+                  feedback: Material(
+                    child: Chip(
+                      label: Text(opcion),
+                    ),
+                  ),
+                  childWhenDragging: Container(),
+                  child: FilterChip(
+                    label: Text(opcion),
+                    selected: _selectedOptions.contains(opcion),
+                    onSelected: (bool selected) {
+                      setState(() {
+                        if (selected) {
+                          _selectedOptions.add(opcion);
+                        } else {
+                          _selectedOptions.remove(opcion);
+                        }
+                      });
+                    },
+                  ),
                 );
               }).toList(),
             ),
@@ -387,18 +396,29 @@ class _MiAutocompletarState extends State<MiAutocompletar> {
         ),
         SizedBox(height: 20),
         Text('Seleccionados:'),
-        Wrap(
-          spacing: 8.0,
-          children: _selectedOptions.map((String opcion) {
-            return Chip(
-              label: Text(opcion),
-              onDeleted: () {
-                setState(() {
-                  _selectedOptions.remove(opcion);
-                });
-              },
+        DragTarget<String>(
+          onAccept: (data) {
+            setState(() {
+              if (!_selectedOptions.contains(data)) {
+                _selectedOptions.add(data);
+              }
+            });
+          },
+          builder: (context, candidateData, rejectedData) {
+            return Wrap(
+              spacing: 8.0,
+              children: _selectedOptions.map((String opcion) {
+                return Chip(
+                  label: Text(opcion),
+                  onDeleted: () {
+                    setState(() {
+                      _selectedOptions.remove(opcion);
+                    });
+                  },
+                );
+              }).toList(),
             );
-          }).toList(),
+          },
         ),
       ],
     );
