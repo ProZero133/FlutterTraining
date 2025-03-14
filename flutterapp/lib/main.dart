@@ -18,14 +18,32 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => MyAppState(),
-      child: MaterialApp(
-        title: 'Namer App',
-        theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color.fromARGB(255, 75, 16, 211)),
-        ),
-        home: MyHomePage(),
+      child: Consumer<MyAppState>(
+        builder: (context, appState, child) {
+          return MaterialApp(
+            title: 'Namer App',
+            theme: appState.isDarkMode ? ThemeData.dark().copyWith(
+              colorScheme: ColorScheme.dark(
+                primary: Colors.blueGrey,
+                secondary: Colors.cyan,
+                surface: Colors.blueGrey[800]!,
+                background: Colors.blueGrey[900]!,
+                error: Colors.red[400]!,
+                onPrimary: Colors.white,
+                onSecondary: Colors.white,
+                onSurface: Colors.white,
+                onBackground: Colors.white,
+                onError: Colors.white,
+              ),
+            ) : ThemeData(
+              useMaterial3: true,
+              colorScheme: ColorScheme.fromSeed(
+                seedColor: const Color.fromARGB(255, 75, 16, 211),
+              ),
+            ),
+            home: MyHomePage(),
+          );
+        },
       ),
     );
   }
@@ -34,6 +52,7 @@ class MyApp extends StatelessWidget {
 class MyAppState extends ChangeNotifier {
   var current = WordPair.random();
   var favorites = <WordPair>[];
+  bool isDarkMode = false;
 
   void getNext() {
     current = WordPair.random();
@@ -59,12 +78,17 @@ class MyAppState extends ChangeNotifier {
     notifyListeners();
   }
 
-   void reorderFavorites(int oldIndex, int newIndex) {
+  void reorderFavorites(int oldIndex, int newIndex) {
     if (newIndex > oldIndex) {
       newIndex -= 1;
     }
     final WordPair item = favorites.removeAt(oldIndex);
     favorites.insert(newIndex, item);
+    notifyListeners();
+  }
+
+  void toggleDarkMode() {
+    isDarkMode = !isDarkMode;
     notifyListeners();
   }
 }
@@ -86,6 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
     Widget page;
     switch (selectedIndex) {
       case 0:
@@ -104,6 +129,14 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Flutter training'),
+        actions: [
+          Switch(
+            value: appState.isDarkMode,
+            onChanged: (value) {
+              appState.toggleDarkMode();
+            },
+          ),
+        ],
       ),
       body: LayoutBuilder(builder: (context, constraints) {
         return Row(
