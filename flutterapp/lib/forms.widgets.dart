@@ -312,12 +312,56 @@ class _MiAutocompletarState extends State<MiAutocompletar> {
     'Bash'
   ];
 
-  List<String> _selectedOptions = [];
+   List<String> _selectedOptions = [];
   bool _useAutocomplete = true;
+
+  void _addNewOption(String newOption) {
+    setState(() {
+      _opciones.add(newOption);
+    });
+  }
+
+  void _showAddOptionDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        String newOption = '';
+        return AlertDialog(
+          title: Text('Agregar nueva opción'),
+          content: TextField(
+            onChanged: (value) {
+              newOption = value;
+            },
+            decoration: InputDecoration(hintText: 'Nueva opción'),
+          ),
+          actions: <Widget>[
+            ElevatedButton(
+              child: Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+              child: Text('Agregar'),
+              onPressed: () {
+                if (newOption.isNotEmpty) {
+                  _addNewOption(newOption);
+                }
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return
+    Scaffold(
+      body:
+     Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -362,7 +406,7 @@ class _MiAutocompletarState extends State<MiAutocompletar> {
               });
             },
           ),
-        Container(
+        SizedBox(
           height: 200, // Limita la altura del contenedor
           child: SingleChildScrollView(
             child: Wrap(
@@ -421,6 +465,11 @@ class _MiAutocompletarState extends State<MiAutocompletar> {
           },
         ),
       ],
+     ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showAddOptionDialog,
+        child: Icon(Icons.add),
+      ),
     );
   }
 }
