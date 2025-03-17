@@ -347,8 +347,8 @@ class _MiAutocompletarState extends State<MiAutocompletar> {
                 label: Text('Lista 3'),
               ),
             ],
-            selected: {_selectedSegment}, // Use a Set<int> here
-            onSelectionChanged: (Set<int> newSelection) { // Correct parameter name
+            selected: {_selectedSegment},
+            onSelectionChanged: (Set<int> newSelection) { 
               _onSegmentChanged(newSelection.first);
             },
           ),
@@ -387,7 +387,7 @@ class _MiAutocompletarState extends State<MiAutocompletar> {
           SizedBox(height: 20),
           Text('Seleccionados:'),
           Container(
-            height: 300, // Aumenta la altura del contenedor
+            height: 300,
             child: SingleChildScrollView(
               child: DragTarget<String>(
                 onAccept: (data) {

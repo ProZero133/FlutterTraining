@@ -285,15 +285,36 @@ class MiWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: Colors.blue,
-        borderRadius: BorderRadius.circular(8.0),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(color: Colors.white, fontSize: 18.0),
+    return MouseRegion(
+      onEnter: (_) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Alerta'),
+              content: Text('Has pasado el cursor sobre el contenedor.'),
+              actions: <Widget>[
+                ElevatedButton(
+                  child: Text('Cerrar'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
+      child: Container(
+        padding: EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          color: Colors.blue,
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        child: Text(
+          text,
+          style: TextStyle(color: Colors.white, fontSize: 18.0),
+        ),
       ),
     );
   }
