@@ -190,130 +190,40 @@ class MiAutocompletar extends StatefulWidget {
 }
 
 class _MiAutocompletarState extends State<MiAutocompletar> {
-  final List<String> _opciones = [
+  final List<String> _opciones1 = [
     'Flutter',
     'Dart',
     'React',
     'Vue',
     'Angular',
+  ];
+
+  final List<String> _opciones2 = [
     'JavaScript',
     'TypeScript',
     'Python',
     'Java',
     'C#',
+  ];
+
+  final List<String> _opciones3 = [
     'C++',
     'Ruby',
     'Swift',
     'Kotlin',
     'PHP',
-    'HTML',
-    'CSS',
-    'SQL',
-    'NoSQL',
-    'GraphQL',
-    'REST',
-    'SOAP',
-    'JSON',
-    'XML',
-    'YAML',
-    'Docker',
-    'Kubernetes',
-    'AWS',
-    'Azure',
-    'GCP',
-    'Firebase',
-    'MongoDB',
-    'PostgreSQL',
-    'MySQL',
-    'SQLite',
-    'Redis',
-    'Elasticsearch',
-    'Linux',
-    'Windows',
-    'MacOS',
-    'Android',
-    'iOS',
-    'Git',
-    'GitHub',
-    'GitLab',
-    'Bitbucket',
-    'CI/CD',
-    'Jenkins',
-    'Travis CI',
-    'CircleCI',
-    'Ansible',
-    'Terraform',
-    'Puppet',
-    'Chef',
-    'Nagios',
-    'Prometheus',
-    'Grafana',
-    'Splunk',
-    'New Relic',
-    'Sentry',
-    'DataDog',
-    'Logstash',
-    'Kibana',
-    'Hadoop',
-    'Spark',
-    'Kafka',
-    'RabbitMQ',
-    'ActiveMQ',
-    'Zookeeper',
-    'Nginx',
-    'Apache',
-    'Tomcat',
-    'Jetty',
-    'Spring',
-    'Hibernate',
-    'JPA',
-    'EJB',
-    'JSF',
-    'PrimeFaces',
-    'Thymeleaf',
-    'JSP',
-    'Servlets',
-    'Struts',
-    'Grails',
-    'Play',
-    'Micronaut',
-    'Quarkus',
-    'Vert.x',
-    'Dropwizard',
-    'Lagom',
-    'Akka',
-    'Scala',
-    'Groovy',
-    'Clojure',
-    'Elixir',
-    'Erlang',
-    'Haskell',
-    'F#',
-    'OCaml',
-    'Rust',
-    'Go',
-    'Perl',
-    'Lua',
-    'R',
-    'MATLAB',
-    'Octave',
-    'SAS',
-    'SPSS',
-    'Stata',
-    'Julia',
-    'Fortran',
-    'COBOL',
-    'Pascal',
-    'Ada',
-    'VHDL',
-    'Verilog',
-    'Assembly',
-    'Shell',
-    'Bash'
   ];
 
-   List<String> _selectedOptions = [];
+  List<String> _opciones = [];
+  List<String> _selectedOptions = [];
   bool _useAutocomplete = true;
+  int _selectedSegment = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _opciones = _opciones1;
+  }
 
   void _addNewOption(String newOption) {
     setState(() {
@@ -356,116 +266,157 @@ class _MiAutocompletarState extends State<MiAutocompletar> {
     );
   }
 
+  void _onSegmentChanged(int index) {
+    setState(() {
+      _selectedSegment = index;
+      switch (index) {
+        case 0:
+          _opciones = _opciones1;
+          break;
+        case 1:
+          _opciones = _opciones2;
+          break;
+        case 2:
+          _opciones = _opciones3;
+          break;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return
-    Scaffold(
-      body:
-     Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Radio<bool>(
-              value: true,
-              groupValue: _useAutocomplete,
-              onChanged: (bool? value) {
-                setState(() {
-                  _useAutocomplete = value!;
-                });
-              },
-            ),
-            Text('Usar Autocompletar'),
-            Radio<bool>(
-              value: false,
-              groupValue: _useAutocomplete,
-              onChanged: (bool? value) {
-                setState(() {
-                  _useAutocomplete = value!;
-                });
-              },
-            ),
-            Text('No usar Autocompletar'),
-          ],
-        ),
-        if (_useAutocomplete)
-          Autocomplete<String>(
-            optionsBuilder: (TextEditingValue valorTexto) {
-              if (valorTexto.text.isEmpty) {
-                return const Iterable<String>.empty();
-              }
-              return _opciones.where((String opcion) {
-                return opcion.contains(valorTexto.text.toLowerCase());
-              });
-            },
-            onSelected: (String seleccion) {
-              setState(() {
-                if (!_selectedOptions.contains(seleccion)) {
-                  _selectedOptions.add(seleccion);
+    return Scaffold(
+      body: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Radio<bool>(
+                value: true,
+                groupValue: _useAutocomplete,
+                onChanged: (bool? value) {
+                  setState(() {
+                    _useAutocomplete = value!;
+                  });
+                },
+              ),
+              Text('Usar Autocompletar'),
+              Radio<bool>(
+                value: false,
+                groupValue: _useAutocomplete,
+                onChanged: (bool? value) {
+                  setState(() {
+                    _useAutocomplete = value!;
+                  });
+                },
+              ),
+              Text('No usar Autocompletar'),
+            ],
+          ),
+          if (_useAutocomplete)
+            Autocomplete<String>(
+              optionsBuilder: (TextEditingValue valorTexto) {
+                if (valorTexto.text.isEmpty) {
+                  return const Iterable<String>.empty();
                 }
-              });
+                return _opciones.where((String opcion) {
+                  return opcion.contains(valorTexto.text.toLowerCase());
+                });
+              },
+              onSelected: (String seleccion) {
+                setState(() {
+                  if (!_selectedOptions.contains(seleccion)) {
+                    _selectedOptions.add(seleccion);
+                  }
+                });
+              },
+            ),
+          SizedBox(height: 20),
+          SegmentedButton(
+            segments: [
+              ButtonSegment(
+                value: 0,
+                label: Text('Lista 1'),
+              ),
+              ButtonSegment(
+                value: 1,
+                label: Text('Lista 2'),
+              ),
+              ButtonSegment(
+                value: 2,
+                label: Text('Lista 3'),
+              ),
+            ],
+            selected: {_selectedSegment}, // Use a Set<int> here
+            onSelectionChanged: (Set<int> newSelection) { // Correct parameter name
+              _onSegmentChanged(newSelection.first);
             },
           ),
-        SizedBox(
-          height: 200, // Limita la altura del contenedor
-          child: SingleChildScrollView(
-            child: Wrap(
-              spacing: 8.0,
-              children: _opciones.map((String opcion) {
-                return Draggable<String>(
-                  data: opcion,
-                  feedback: Material(
-                    child: Chip(
-                      label: Text(opcion),
+          Container(
+            height: 200, // Limita la altura del contenedor
+            child: SingleChildScrollView(
+              child: Wrap(
+                spacing: 8.0,
+                children: _opciones.map((String opcion) {
+                  return Draggable<String>(
+                    data: opcion,
+                    feedback: Material(
+                      child: Chip(
+                        label: Text(opcion),
+                      ),
                     ),
-                  ),
-                  childWhenDragging: Container(),
-                  child: FilterChip(
-                    label: Text(opcion),
-                    selected: _selectedOptions.contains(opcion),
-                    onSelected: (bool selected) {
-                      setState(() {
-                        if (selected) {
-                          _selectedOptions.add(opcion);
-                        } else {
-                          _selectedOptions.remove(opcion);
-                        }
-                      });
-                    },
-                  ),
-                );
-              }).toList(),
+                    childWhenDragging: Container(),
+                    child: FilterChip(
+                      label: Text(opcion),
+                      selected: _selectedOptions.contains(opcion),
+                      onSelected: (bool selected) {
+                        setState(() {
+                          if (selected) {
+                            _selectedOptions.add(opcion);
+                          } else {
+                            _selectedOptions.remove(opcion);
+                          }
+                        });
+                      },
+                    ),
+                  );
+                }).toList(),
+              ),
             ),
           ),
-        ),
-        SizedBox(height: 20),
-        Text('Seleccionados:'),
-        DragTarget<String>(
-          onAccept: (data) {
-            setState(() {
-              if (!_selectedOptions.contains(data)) {
-                _selectedOptions.add(data);
-              }
-            });
-          },
-          builder: (context, candidateData, rejectedData) {
-            return Wrap(
-              spacing: 8.0,
-              children: _selectedOptions.map((String opcion) {
-                return Chip(
-                  label: Text(opcion),
-                  onDeleted: () {
-                    setState(() {
-                      _selectedOptions.remove(opcion);
-                    });
-                  },
-                );
-              }).toList(),
-            );
-          },
-        ),
-      ],
-     ),
+          SizedBox(height: 20),
+          Text('Seleccionados:'),
+          Container(
+            height: 300, // Aumenta la altura del contenedor
+            child: SingleChildScrollView(
+              child: DragTarget<String>(
+                onAccept: (data) {
+                  setState(() {
+                    if (!_selectedOptions.contains(data)) {
+                      _selectedOptions.add(data);
+                    }
+                  });
+                },
+                builder: (context, candidateData, rejectedData) {
+                  return Wrap(
+                    spacing: 8.0,
+                    children: _selectedOptions.map((String opcion) {
+                      return Chip(
+                        label: Text(opcion),
+                        onDeleted: () {
+                          setState(() {
+                            _selectedOptions.remove(opcion);
+                          });
+                        },
+                      );
+                    }).toList(),
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddOptionDialog,
         child: Icon(Icons.add),
