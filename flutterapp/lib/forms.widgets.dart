@@ -291,8 +291,8 @@ class MiAutocompletarState extends State<MiAutocompletar> {
         child:
       Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          Wrap(
+            
             children: [
               Radio<bool>(
                 value: true,
