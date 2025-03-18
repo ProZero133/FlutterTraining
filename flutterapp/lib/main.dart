@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'mostrarImagenes.dart';
+import 'mostrar_imagenes.dart';
 import 'forms.widgets.dart' as forms_widgets;
-
 
 void main() {
   runApp(MyApp());
@@ -22,25 +21,27 @@ class MyApp extends StatelessWidget {
         builder: (context, appState, child) {
           return MaterialApp(
             title: 'Namer App',
-            theme: appState.isDarkMode ? ThemeData.dark().copyWith(
-              colorScheme: ColorScheme.dark(
-                primary: Colors.blueGrey,
-                secondary: Colors.cyan,
-                surface: Colors.blueGrey[800]!,
-                background: Colors.blueGrey[900]!,
-                error: Colors.red[400]!,
-                onPrimary: Colors.white,
-                onSecondary: Colors.white,
-                onSurface: Colors.white,
-                onBackground: Colors.white,
-                onError: Colors.white,
-              ),
-            ) : ThemeData(
-              useMaterial3: true,
-              colorScheme: ColorScheme.fromSeed(
-                seedColor: const Color.fromARGB(255, 75, 16, 211),
-              ),
-            ),
+            theme: appState.isDarkMode
+                ? ThemeData.dark().copyWith(
+                    colorScheme: ColorScheme.dark(
+                      primary: Colors.blueGrey,
+                      secondary: Colors.cyan,
+                      surface: Colors.blueGrey[
+                          800]!, // Reemplaza 'background' con 'surface'
+                      error: Colors.red[400]!,
+                      onPrimary: Colors.white,
+                      onSecondary: Colors.white,
+                      onSurface: Colors
+                          .white, // Reemplaza 'onBackground' con 'onSurface'
+                      onError: Colors.white,
+                    ),
+                  )
+                : ThemeData(
+                    useMaterial3: true,
+                    colorScheme: ColorScheme.fromSeed(
+                      seedColor: const Color.fromARGB(255, 75, 16, 211),
+                    ),
+                  ),
             home: MyHomePage(),
           );
         },
@@ -92,7 +93,6 @@ class MyAppState extends ChangeNotifier {
     notifyListeners();
   }
 }
-
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -197,11 +197,6 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-
-
-
-
-
 
 class FavoritesPage extends StatefulWidget {
   @override
@@ -396,23 +391,23 @@ class _PalabraPersonalizadaState extends State<PalabraPersonalizada> {
 
   @override
   Widget build(BuildContext context) {
-  return Wrap(
-    alignment: WrapAlignment.center, // Alinea los elementos en el centro
-    spacing: 10.0, // Espacio horizontal entre elementos
-    runSpacing: 10.0, // Espacio vertical entre líneas
-    children: [
-      FractionallySizedBox(
-        widthFactor: 0.5, // Ocupa el 20% del ancho del contenedor padre
-        child: TextField(
-          controller: controller,
-          decoration: InputDecoration(
-            hintText: 'Agregar palabra',
+    return Wrap(
+      alignment: WrapAlignment.center, // Alinea los elementos en el centro
+      spacing: 10.0, // Espacio horizontal entre elementos
+      runSpacing: 10.0, // Espacio vertical entre líneas
+      children: [
+        FractionallySizedBox(
+          widthFactor: 0.5, // Ocupa el 20% del ancho del contenedor padre
+          child: TextField(
+            controller: controller,
+            decoration: InputDecoration(
+              hintText: 'Agregar palabra',
+            ),
           ),
         ),
-      ),
-    ],
-  );
-}
+      ],
+    );
+  }
 }
 
 class BigCard extends StatelessWidget {
