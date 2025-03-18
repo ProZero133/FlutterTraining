@@ -11,7 +11,7 @@ class FormularioState extends State<Formulario> {
   @override
   Widget build(BuildContext context) {
     return Form(
-      child: Column(
+      child: Wrap(
         children: [
           Text('Formulario'),
           TextFormField(
@@ -135,8 +135,8 @@ class CampoFormularioState extends State<CampoFormulario> {
   Widget build(BuildContext context) {
     return FormField<String>(
       builder: (FormFieldState<String> estado) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        return Wrap(
+          
           children: <Widget>[
             Text(
               'Campo de Formulario',
