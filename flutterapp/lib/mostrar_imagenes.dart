@@ -5,10 +5,10 @@ import 'package:http/http.dart' as http;
 
 class MostrarImagen extends StatefulWidget {
   @override
-  _MostrarImagenState createState() => _MostrarImagenState();
+  MostrarImagenState createState() => MostrarImagenState();
 }
 
-class _MostrarImagenState extends State<MostrarImagen> {
+class MostrarImagenState extends State<MostrarImagen> {
   final List<String> _subdirectories = ['images', 'gifs'];
   final Map<String, List<String>> _assets = {
     'images': ['capi.png', 'hellLetLoose.png', 'tu-4.jpg'],

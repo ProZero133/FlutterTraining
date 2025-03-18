@@ -1,7 +1,5 @@
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'mostrar_imagenes.dart';
 import 'forms.widgets.dart' as forms_widgets;
@@ -200,10 +198,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
 class FavoritesPage extends StatefulWidget {
   @override
-  _FavoritesPageState createState() => _FavoritesPageState();
+  FavoritesPageState createState() => FavoritesPageState();
 }
 
-class _FavoritesPageState extends State<FavoritesPage> {
+class FavoritesPageState extends State<FavoritesPage> {
   @override
   Widget build(BuildContext context) {
     return Consumer<MyAppState>(

@@ -3,10 +3,10 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 class Formulario extends StatefulWidget {
   @override
-  _FormularioState createState() => _FormularioState();
+  FormularioState createState() => FormularioState();
 }
 
-class _FormularioState extends State<Formulario> {
+class FormularioState extends State<Formulario> {
   bool _isChecked = false;
   @override
   Widget build(BuildContext context) {
@@ -66,10 +66,10 @@ class _FormularioState extends State<Formulario> {
 
 class CampoFormulario extends StatefulWidget {
   @override
-  _CampoFormularioState createState() => _CampoFormularioState();
+  CampoFormularioState createState() => CampoFormularioState();
 }
 
-class _CampoFormularioState extends State<CampoFormulario> {
+class CampoFormularioState extends State<CampoFormulario> {
   Color _textColor = Colors.black;
   Color _shadowColor = Colors.grey;
 
@@ -186,10 +186,10 @@ class _CampoFormularioState extends State<CampoFormulario> {
 
 class MiAutocompletar extends StatefulWidget {
   @override
-  _MiAutocompletarState createState() => _MiAutocompletarState();
+  MiAutocompletarState createState() => MiAutocompletarState();
 }
 
-class _MiAutocompletarState extends State<MiAutocompletar> {
+class MiAutocompletarState extends State<MiAutocompletar> {
   final List<String> _opciones1 = [
     'Flutter',
     'Dart',
@@ -388,14 +388,14 @@ class _MiAutocompletarState extends State<MiAutocompletar> {
           ),
           SizedBox(height: 20),
           Text('Seleccionados:'),
-          Container(
+          SizedBox(
             height: 300,
             child: SingleChildScrollView(
               child: DragTarget<String>(
-                onAccept: (data) {
+                onAcceptWithDetails: (DragTargetDetails<String> details) {
                   setState(() {
-                    if (!_selectedOptions.contains(data)) {
-                      _selectedOptions.add(data);
+                    if (!_selectedOptions.contains(details.data)) {
+                      _selectedOptions.add(details.data);
                     }
                   });
                 },
@@ -430,10 +430,10 @@ class _MiAutocompletarState extends State<MiAutocompletar> {
 
 class GridViewWidget extends StatefulWidget {
   @override
-  _GridViewWidget createState() => _GridViewWidget();
+  GridViewWidgetState createState() => GridViewWidgetState();
 }
 
-class _GridViewWidget extends State<GridViewWidget> {
+class GridViewWidgetState extends State<GridViewWidget> {
   double _tamanoTarjeta = 345.0;
   String _layout = 'Grid';
 
@@ -510,18 +510,18 @@ class _GridViewWidget extends State<GridViewWidget> {
       case 'Staggered':
         return GridView.count(
           crossAxisCount: 2,
-          children: _buildChildren(),
           mainAxisSpacing: 4.0,
           crossAxisSpacing: 4.0,
           childAspectRatio: 0.75,
+          children: _buildChildren(),
         );
       case 'Masonry':
         return GridView.count(
           crossAxisCount: 2,
-          children: _buildChildren(),
           mainAxisSpacing: 4.0,
           crossAxisSpacing: 4.0,
           childAspectRatio: 1.5,
+          children: _buildChildren(),
         );
       case 'Carousel':
         return PageView(
@@ -544,7 +544,7 @@ class _GridViewWidget extends State<GridViewWidget> {
           borderRadius: BorderRadius.circular(8.0),
         ),
         child: Center(
-          child: Container(
+          child: SizedBox(
             width: _tamanoTarjeta,
             height: _tamanoTarjeta,
             child: Formulario(),
@@ -557,7 +557,7 @@ class _GridViewWidget extends State<GridViewWidget> {
           borderRadius: BorderRadius.circular(8.0),
         ),
         child: Center(
-          child: Container(
+          child: SizedBox(
             width: _tamanoTarjeta,
             height: _tamanoTarjeta,
             child: CampoFormulario(),
@@ -568,7 +568,7 @@ class _GridViewWidget extends State<GridViewWidget> {
         color: const Color.fromARGB(137, 63, 43, 177),
         borderRadius: BorderRadius.circular(8.0),
         child: Center(
-          child: Container(
+          child: SizedBox(
             width: _tamanoTarjeta,
             height: _tamanoTarjeta,
             child: MiAutocompletar(),
