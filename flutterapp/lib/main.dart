@@ -339,8 +339,8 @@ class GeneratorPage extends StatelessWidget {
               ),
             ],
           ),
-          Row(
-            mainAxisSize: MainAxisSize.min,
+          Wrap(
+            alignment: WrapAlignment.center,
             children: [
               PalabraPersonalizada(key: _palabraPersonalizadaKey),
               ElevatedButton(
@@ -396,17 +396,23 @@ class _PalabraPersonalizadaState extends State<PalabraPersonalizada> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 250,
-      padding: EdgeInsets.all(16.0),
-      child: TextField(
-        controller: controller,
-        decoration: InputDecoration(
-          hintText: 'Palabra personalizada',
+  return Wrap(
+    alignment: WrapAlignment.center, // Alinea los elementos en el centro
+    spacing: 10.0, // Espacio horizontal entre elementos
+    runSpacing: 10.0, // Espacio vertical entre líneas
+    children: [
+      FractionallySizedBox(
+        widthFactor: 0.5, // Ocupa el 20% del ancho del contenedor padre
+        child: TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            hintText: 'Agregar palabra',
+          ),
         ),
       ),
-    );
-  }
+    ],
+  );
+}
 }
 
 class BigCard extends StatelessWidget {
