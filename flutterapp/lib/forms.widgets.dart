@@ -286,7 +286,10 @@ class _MiAutocompletarState extends State<MiAutocompletar> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
+      body: 
+      SingleChildScrollView(
+        child:
+      Column(
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -352,11 +355,10 @@ class _MiAutocompletarState extends State<MiAutocompletar> {
               _onSegmentChanged(newSelection.first);
             },
           ),
-          Container(
-            height: 200, // Limita la altura del contenedor
+          SizedBox(
             child: SingleChildScrollView(
               child: Wrap(
-                spacing: 8.0,
+                spacing: 2.0,
                 children: _opciones.map((String opcion) {
                   return Draggable<String>(
                     data: opcion,
@@ -416,6 +418,7 @@ class _MiAutocompletarState extends State<MiAutocompletar> {
             ),
           ),
         ],
+      ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddOptionDialog,
